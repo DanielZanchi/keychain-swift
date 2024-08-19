@@ -349,3 +349,33 @@ open class KeychainSwift {
     return result
   }
 }
+
+public extension KeychainSwift {
+    
+    public func getInt(_ key: String) -> Int? {
+        if let data = getData(key) {
+            do {
+                let number = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSNumber.self, from: data)
+                return number?.intValue
+            } catch {
+                print("Unarchiving error: \(error)")
+                return nil
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    @discardableResult
+    public func set(_ value: Int, forKey key: String) -> Bool {
+        let number = NSNumber(value: value)
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: number, requiringSecureCoding: true)
+            return set(data, forKey: key)
+        } catch {
+            print("Archiving error: \(error)")
+            return false
+        }
+    }
+    
+}
